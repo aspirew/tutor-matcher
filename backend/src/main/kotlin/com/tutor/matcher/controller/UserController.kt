@@ -8,7 +8,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.*
 import io.swagger.v3.oas.annotations.tags.Tag
 
-const val USERS_UIR = "/users"
+const val USERS_URI = "/users"
 
 val users = listOf(UserDto(
     id = 1,
@@ -27,7 +27,7 @@ val users = listOf(UserDto(
 ))
 
 @Tag(name = "Users")
-@Controller(USERS_UIR)
+@Controller(USERS_URI)
 class UserController {
     @Get
     @Produces(APPLICATION_JSON)
