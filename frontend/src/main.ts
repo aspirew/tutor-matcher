@@ -5,8 +5,6 @@ import App from './App.vue'
 import router from './router'
 import GoogleSignInPlugin from "vue3-google-signin"
 
-import './assets/main.css'
-
 const gauthOption = {
     clientId: '943855035200-9hak1399kqev4q9fj92srmpikbrgtib2.apps.googleusercontent.com',
     redirectUri: 'http://localhost:8080/oauth/callback/google',

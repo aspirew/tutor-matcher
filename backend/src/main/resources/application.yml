@@ -10,6 +10,7 @@ micronaut:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
   security:
+    enabled: false
     authentication: idtoken
     oauth2:
       clients:
