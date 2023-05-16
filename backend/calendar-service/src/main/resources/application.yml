@@ -1,0 +1,38 @@
+micronaut:
+  application:
+    name: calendarService
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  security:
+    enabled: false
+    authentication: idtoken
+    oauth2:
+      clients:
+        google:
+          clientId: 943855035200-9hak1399kqev4q9fj92srmpikbrgtib2.apps.googleusercontent.com
+          clientSecret: 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
+          authorizationUri: https://accounts.google.com/o/oauth2/auth
+          tokenUri: https://accounts.google.com/o/oauth2/token
+          redirectUri: http://localhost:8080/oauth/callback/google
+          scope:
+            - openid
+            - email
+            - profile
+          clientAuthenticationMethod: basic
+          defaultScopes: ["openid", "email", "profile"]
+    endpoints:
+      logout:
+        get-allowed: true
+netty:
+  default:
+    allocator:
+      max-order: 3
+rabbitmq:
+  username: admin
+  password: admin

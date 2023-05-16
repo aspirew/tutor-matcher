@@ -1,0 +1,41 @@
+services:
+  calendar-service:
+    image: calendar-service
+    container_name: calendar-service
+    ports:
+      - 8081:8080
+  lesson-service:
+    image: lesson-service
+    container_name: lesson-service
+    ports:
+      - 8082:8080
+  matcher-service:
+    image: matcher-service
+    container_name: matcher-service
+    ports:
+      - 8083:8080
+  payment-service:
+    image: payment-service
+    container_name: payment-service
+    ports:
+      - 8084:8080
+  resource-service:
+    image: resource-service
+    container_name: resource-service
+    ports:
+      - 8085:8080
+  user-service:
+    image: user-service
+    container_name: user-service
+    ports:
+      - 8086:8080
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+
+
