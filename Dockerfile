@@ -2,16 +2,16 @@
 FROM node:lts AS build-stage
 
 # Set the working directory in the container
-WORKDIR /src
+WORKDIR /frontend/src
 
 # Copy the package.json and package-lock.json files to the working directory
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Install the app dependencies
 RUN npm install
 
 # Copy the entire app directory to the working directory
-COPY . .
+COPY frontend .
 
 # Build the Vue app for production
 RUN npm run build
@@ -23,12 +23,12 @@ FROM nginx
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy the custom Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d
+COPY frontend/nginx.conf /etc/nginx/conf.d
 
 # Copy the built Vue app files from the build-stage to the Nginx document root directory
-COPY --from=build-stage /src/dist /usr/share/nginx/html
+COPY --from=build-stage /frontend/src/dist /usr/share/nginx/html
 
-# Expose port 5173
+# Expose port 4200
 EXPOSE 5173
 
 # Start the Nginx server
