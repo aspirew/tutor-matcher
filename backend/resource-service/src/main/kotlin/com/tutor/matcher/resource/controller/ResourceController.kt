@@ -1,62 +1,102 @@
 package com.tutor.matcher.resource.controller
 
-import com.tutor.matcher.dto.ResourceDto
-import com.tutor.matcher.dto.UserDto
-import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
+import com.tutor.matcher.resource.domain.Resource
+import com.tutor.matcher.resource.domain.ResourceMetadata
+import com.tutor.matcher.resource.repositories.ResourceRepository
+import io.micronaut.data.exceptions.DataAccessException
+import io.micronaut.data.model.Pageable
+import io.micronaut.http.*
 import io.micronaut.http.annotation.*
-import io.micronaut.http.exceptions.HttpStatusException
 import io.micronaut.http.multipart.CompletedFileUpload
-import io.micronaut.http.server.types.files.StreamedFile
-import io.swagger.v3.oas.annotations.tags.Tag
+import io.micronaut.scheduling.TaskExecutors
+import io.micronaut.scheduling.annotation.ExecuteOn
+import com.google.gson.Gson
 import java.io.FileOutputStream
-import java.util.concurrent.Flow.Publisher
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.net.URI
+import java.util.*
+import javax.validation.Valid
 
-const val RESOURCES_URI = "/resources"
 
-val resource = ResourceDto(
-    id = "123",
-    userName = "userName",
-    type = "image",
-    name = "name",
-    description = "description",
-)
+@ExecuteOn(TaskExecutors.IO)
+@Controller("/resources")
+open class ResourceController(resourceRepository: ResourceRepository) {
+    protected val resourceRepository: ResourceRepository
+    var gson = Gson()
+    val uploadpath: String = "./uploadedFiles"
 
-@Tag(name = "Resources")
-@Controller(RESOURCES_URI)
-class ResourceController {
-    @Get
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getResourceMetadata(): ResourceDto {
-        return resource
+    init {
+        this.resourceRepository = resourceRepository
     }
 
-    @Get("/{userName}/{resourceType}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    fun getResource(@PathVariable userName: String, @PathVariable resourceType: String): List<StreamedFile> {
-        throw HttpStatusException(HttpStatus.NOT_FOUND, "No document found")
+    @Get("/{id}")
+    fun show(id: String): Optional<Resource> {
+        return resourceRepository
+                .findById(id)
     }
 
-    @Get("/{userName}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    fun getResources(@PathVariable userName: String): List<StreamedFile> {
-        throw HttpStatusException(HttpStatus.NOT_FOUND, "No documents found")
+    @Get("/{username}/{resourceType}")
+    fun getResource(@PathVariable username: String, @PathVariable resourceType: String): String {
+        val res: List<Resource> = resourceRepository.findAll(username, resourceType)
+        return gson.toJson(res)
     }
 
-    @Delete("/{userName}")
-    fun deleteResource(@PathVariable userName: String): HttpResponse<String>? {
-        return HttpResponse.ok("Successfully deleted document for $userName")
+    @Get("/{username}")
+    fun getResource(@PathVariable username: String): String {
+        val res: List<Resource> = resourceRepository.findAllByUsername(username)
+        return gson.toJson(res)
+    }
+
+    @Put
+    fun update(@Body command: @Valid ResourceUpdateCommand): HttpResponse<*> {
+        resourceRepository.update(command.id, command.name, command.username, command.type, command.description, command.resource_url)
+        return HttpResponse
+                .ok<Any>("Image metadata updated")
+                .header(HttpHeaders.LOCATION, location(command.id).getPath())
+    }
+
+    @Get("/list")
+    fun list(pageable: @Valid Pageable?): List<Resource> {
+        return resourceRepository.findAll(pageable).getContent()
     }
 
     @Post
-    fun uploadResource(
-        @Part("resourceMetadata") resourceMetadata: ResourceDto,
-        @Part resource: CompletedFileUpload): HttpResponse<String>? {
-        val fileUrl = "../uploadedFiles/" + resourceMetadata.type + "/" + resourceMetadata.name
-        val fout = FileOutputStream(fileUrl)
-        fout.write(resource.bytes)
-        fout.close()
-        return HttpResponse.ok("Successfully created document for ${resourceMetadata.userName}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    fun save(@Part("resourceMetadata") resourceMetadataJson: String,
+             @Part resource: CompletedFileUpload): HttpResponse<Resource> {
+        try{
+            val resourceMetadata: ResourceMetadata = gson.fromJson(resourceMetadataJson, ResourceMetadata::class.java)
+            val dirs = "${uploadpath}/${resourceMetadata.username}/${resourceMetadata.type}"
+            Files.createDirectories(Paths.get(dirs));
+            val resource_url = "${uploadpath}/${resourceMetadata.username}/${resourceMetadata.type}/${resource.filename}"
+            val fout = FileOutputStream(resource_url)
+            fout.write(resource.bytes)
+            fout.close()
+            val database_resource: Resource = resourceRepository.save(resource.filename, resourceMetadata.username, resourceMetadata.type, resourceMetadata.description, resource_url)
+            return HttpResponse
+                    .created<Resource>(database_resource)
+                    .headers { headers: MutableHttpHeaders -> headers.location(location(database_resource.id)) }
+        }
+        catch (e: DataAccessException) {
+            return HttpResponse.noContent()
+        }
+    }
+
+
+
+    @Delete("/{id}")
+    @Status(HttpStatus.NO_CONTENT)
+    fun delete(id: String) {
+        resourceRepository.findById(id).ifPresent { res -> run { Files.deleteIfExists(Paths.get(res.resource_url)) } }
+        resourceRepository.deleteById(id)
+    }
+
+    private fun location(id: String): URI {
+        return URI.create("/resource/$id")
+    }
+
+    private fun location(resource: Resource): URI {
+        return location(resource.id)
     }
 }

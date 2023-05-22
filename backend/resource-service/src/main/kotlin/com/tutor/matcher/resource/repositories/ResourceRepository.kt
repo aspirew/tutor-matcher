@@ -13,6 +13,11 @@ import io.micronaut.data.annotation.Id;
 
 @JdbcRepository(dialect = Dialect.MYSQL)
 interface ResourceRepository : PageableRepository<Resource, String> {
+
+    fun find(username: String, type: String): Resource
+
+    fun findAll(username: String, type: String): List<Resource>
+    fun findAllByUsername(username: String): List<Resource>
     fun save(@NonNull name: @NotBlank String, @NotNull username : @NotBlank String, @NotNull type : @NotBlank String, @NotNull description : @NotBlank String, @NotNull resource_url : @NotBlank String): Resource
 
     @Transactional

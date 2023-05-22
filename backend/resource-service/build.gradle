@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly("mysql:mysql-connector-java")
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.micronaut.security:micronaut-security-oauth2")
     implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
     implementation("io.micronaut.flyway:micronaut-flyway")

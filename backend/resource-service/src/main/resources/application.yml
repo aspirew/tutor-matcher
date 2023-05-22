@@ -1,6 +1,10 @@
 micronaut:
   application:
     name: resourceService
+  server:
+    max-request-size: 50mb
+    multipart:
+      max-file-size: '50MB'
   router:
     static-resources:
       swagger:
