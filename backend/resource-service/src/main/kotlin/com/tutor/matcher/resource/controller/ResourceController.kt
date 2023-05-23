@@ -11,6 +11,7 @@ import io.micronaut.http.multipart.CompletedFileUpload
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
 import com.google.gson.Gson
+import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -31,19 +32,30 @@ open class ResourceController(resourceRepository: ResourceRepository) {
     }
 
     @Get("/{id}")
-    fun show(id: String): Optional<Resource> {
-        return resourceRepository
-                .findById(id)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    fun getResource(id: String): MutableHttpResponse<ByteArray>? {
+        var response = HttpResponse.notFound<ByteArray?>()
+        resourceRepository.findById(id).ifPresent {
+        response = HttpResponse.ok(Files.readAllBytes(File(it.resource_url).toPath()))
+                .header("Content-type", "application/octet-stream")
+                .header("Content-disposition", "attachment; filename=\"${it.name}\"")
+        }
+        return response
     }
 
-    @Get("/{username}/{resourceType}")
-    fun getResource(@PathVariable username: String, @PathVariable resourceType: String): String {
+    @Get("/metadata/{id}")
+    fun getResourceMetadata(id: String): Optional<Resource> {
+        return resourceRepository.findById(id)
+    }
+
+    @Get("/metadata/{username}/{resourceType}")
+    fun getResourceMetadata(@PathVariable username: String, @PathVariable resourceType: String): String {
         val res: List<Resource> = resourceRepository.findAll(username, resourceType)
         return gson.toJson(res)
     }
 
-    @Get("/{username}")
-    fun getResource(@PathVariable username: String): String {
+    @Get("/metadata/{username}")
+    fun getResourceMetadataForUser(@PathVariable username: String): String {
         val res: List<Resource> = resourceRepository.findAllByUsername(username)
         return gson.toJson(res)
     }
