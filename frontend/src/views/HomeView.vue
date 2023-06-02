@@ -1,18 +1,11 @@
 <script setup lang="ts">
-import { GoogleSignInButton, type CredentialResponse } from 'vue3-google-signin'
-
-// handle success event
-const handleLoginSuccess = (response: CredentialResponse) => {
-  const { credential } = response
-  console.log('Access Token', credential)
-}
-
-// handle an error event
-const handleLoginError = () => {
-  console.error('Login failed')
-}
+import LoginComponent from '@/components/LoginComponent.vue'
+import { useTokenStore } from '@/stores/tokenStore'
+const { getToken, clearToken } = useTokenStore()
 </script>
 
 <template>
-  <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+  <p v-if="getToken()">You are logged in!</p>
+  <LoginComponent></LoginComponent>
+  <button @click="clearToken">Log out</button>
 </template>

@@ -1,0 +1,26 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          load: true
+          tags: rav215/tutor-matcher-frontend:${{ secrets.DOCKER_SHA }}
+
+      # - name: Deploy
+      #   uses: digitalocean/action-doctl@v2
+      #   with:
+      #     token: ${{ secrets.DIGITAL_OCEAN_SHA }}
+      #     command: apps create --spec .do/app.yaml
