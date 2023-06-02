@@ -1,17 +1,19 @@
-package com.tutor.matcher.resource
+package api.gw
+
+import io.micronaut.runtime.Micronaut.run
 
 import io.swagger.v3.oas.annotations.*
 import io.swagger.v3.oas.annotations.info.*
-import io.micronaut.runtime.Micronaut.run
 
 @OpenAPIDefinition(
 		info = Info(
-				title = "resource-service",
+				title = "api-gw",
 				version = "0.0"
 		)
 )
 object Api {
 }
+
 fun main(args: Array<String>) {
 	run(*args)
 }

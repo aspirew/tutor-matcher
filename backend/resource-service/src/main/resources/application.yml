@@ -2,6 +2,7 @@ micronaut:
   application:
     name: resourceService
   server:
+    port: -1
     max-request-size: 50mb
     multipart:
       max-file-size: '50MB'
@@ -54,3 +55,10 @@ flyway:
   datasources:
     default:
       enabled: true
+
+---
+consul:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"

@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: api.gw
+testFramework: spock
+sourceLanguage: kotlin
+buildTool: gradle
+features: [annotation-api, app-name, consul, discovery-consul, graalvm, gradle, http-client, jackson-databind, junit, kotlin, kotlin-application, kotlin-build, logback, management, micronaut-build, netty-server, readme, shade, spock, yaml]

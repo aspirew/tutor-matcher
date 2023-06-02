@@ -62,7 +62,7 @@ open class ResourceController(resourceRepository: ResourceRepository) {
 
     @Put
     fun update(@Body command: @Valid ResourceUpdateCommand): HttpResponse<*> {
-        resourceRepository.update(command.id, command.name, command.username, command.type, command.description, command.resource_url)
+        resourceRepository.update(command.id, command.name, command.type, command.description)
         return HttpResponse
                 .ok<Any>("Image metadata updated")
                 .header(HttpHeaders.LOCATION, location(command.id).getPath())

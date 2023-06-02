@@ -26,6 +26,7 @@ interface ResourceRepository : PageableRepository<Resource, String> {
         throw DataAccessException("test exception")
     }
 
-    fun update(@NonNull @Id id: @NotBlank String, @NonNull name: @NotBlank String, @NotNull username : @NotBlank String,@NotNull type : @NotBlank String, description : String, @NotNull resource_url : @NotBlank String): Long
+    fun update(@NonNull @Id id: @NotBlank String, @NonNull name: @NotBlank String,@NotNull type : @NotBlank String, description : String): Long
 
+    fun update(@NonNull @Id id: @NotBlank String, @NonNull name: @NotBlank String, @NotNull username : @NotBlank String,@NotNull type : @NotBlank String, description : String, @NotNull resource_url : @NotBlank String): Long
 }
