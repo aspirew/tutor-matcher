@@ -27,6 +27,11 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut.security:micronaut-security-oauth2")
     implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
+    
+    implementation  'org.postgresql:postgresql:42.6.0'
+	implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+	implementation 'com.google.maps:google-maps-services:2.2.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
 
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
