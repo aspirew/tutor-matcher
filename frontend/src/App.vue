@@ -1,11 +1,24 @@
 <script setup lang="ts">
+import { NConfigProvider } from 'naive-ui'
 import MainNav from './components/nav/MainNav.vue'
+
+const theme = {
+  common: {
+    primaryColor: '#FFA500'
+  },
+  Input: {
+    railColor: '#FFA500',
+    railColorActive: '#FFA500'
+  }
+}
 </script>
 
 <template>
-  <MainNav>
-    <RouterView />
-  </MainNav>
+  <NConfigProvider :theme-overrides="theme">
+    <MainNav>
+      <RouterView />
+    </MainNav>
+  </NConfigProvider>
 </template>
 
 <style lang="scss">

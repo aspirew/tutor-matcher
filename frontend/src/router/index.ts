@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { Routes } from './routes'
 import ProfileView from '@/views/ProfileView.vue'
-import CalendarView from '@/views/CalendarView.vue'
+import ProfileEditView from '@/views/ProfileEditView.vue'
 import { useTokenStore } from '@/stores/tokenStore'
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -22,11 +22,8 @@ const router = createRouter({
       component: ProfileView,
     },
     {
-      path: Routes.CALENDAR,
-      component: CalendarView,
-      meta: {
-        saveForPublic: true
-      }
+      path: Routes.PROFILE_EDIT,
+      component: ProfileEditView,
     },
   ]
 })
