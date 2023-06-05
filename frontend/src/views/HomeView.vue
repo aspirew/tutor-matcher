@@ -6,6 +6,6 @@ const { getToken, clearToken } = useTokenStore()
 
 <template>
   <p v-if="getToken()">You are logged in!</p>
-  <LoginComponent></LoginComponent>
+  <LoginComponent />
   <button @click="clearToken">Log out</button>
 </template>

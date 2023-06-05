@@ -52,7 +52,6 @@ header {
 
     .center {
       display: flex;
-      background-color: red;
       height: 10px;
       box-sizing: border-box;
     }

@@ -19,7 +19,7 @@ const router = createRouter({
     },
     {
       path: Routes.PROFILE,
-      component: ProfileView
+      component: ProfileView,
     },
     {
       path: Routes.CALENDAR,

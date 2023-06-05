@@ -6,6 +6,6 @@
 
 <style lang="scss">
 .content {
-  margin-top: 80px;
+  margin: 80px 80px 0 80px;
 }
 </style>
