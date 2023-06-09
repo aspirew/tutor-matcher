@@ -8,12 +8,14 @@ import com.tutor.matcher.matcherLogic.service.MatcherService;
 
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Matcher")
 @Controller("/matcher")
 public class MatcherController {
-	@Get
+	
+	@Post
     List<UserDto> lookForMatch(CriteriaDto criteriaDto) {
         return MatcherService.lookForMatch(criteriaDto);
     }

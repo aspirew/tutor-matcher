@@ -17,19 +17,23 @@ public class Database {
 	
 	public static void insertUser(User user) {
 		try (Connection conn = getConnection()){
-			long addresId = setUserAddress(user.getAddress(), conn);
 			conn.setAutoCommit(false);
+			Statement stat = conn.createStatement();
+            ResultSet result = stat.executeQuery("Select nextval('users_userid_seq'::regclass) as new_id;");
+            result.next();
+            user.setId(result.getLong("new_id"));
+            long addresId = setUserAddress(user.getAddress(), conn);
             PreparedStatement prepStmt = conn.prepareStatement(
-                    "insert into users(name, surname, phone, mail, addressid)"
-                    + " values (?, ?, ?, ?, ?);");
+                    "insert into users(name, surname, phone, mail, addressid, userid)"
+                    + " values (?, ?, ?, ?, ?, ?);");
             prepStmt.setString(1, user.getName());
             prepStmt.setString(2, user.getSurname());
             prepStmt.setString(3, user.getPhone());
             prepStmt.setString(4, user.getMail());
             prepStmt.setLong(5, addresId);
+            prepStmt.setLong(6, user.getId());
             prepStmt.execute();
     		if(user instanceof Teacher) {			
-    			user.setId(getUserIdByEmail(user.getMail()));
     			insertTeacher((Teacher)user, conn);
     		}
     		conn.commit();
@@ -170,11 +174,12 @@ public class Database {
             	BigDecimal hourlyrate = result.getBigDecimal("hourlyrate");
             	int maxdistance = result.getInt("maxdistance");
             	String verification = result.getString("verification");
+            	String teachingLevel = result.getString("teachingLevel");
             	teacher.setHourlyRate(hourlyrate);
             	teacher.setMaxDistance(maxdistance);
             	teacher.setVerification(verification);
             	teacher.setLessonForm(getLessonFormsByTeacher(userId));
-            	teacher.setTeachingLevel("teachingLevel");
+            	teacher.setTeachingLevel(teachingLevel);
             	teacher.setSubjects(getSubjectsByTeacher(userId));
             	return teacher;
             }

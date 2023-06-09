@@ -14,7 +14,7 @@ public class CriteriaDto {
 	private String teachingLevel;
 	private SubjectEnum subject;
 	private AddressDto address;
-	private List<LessonFormEnum> lessonFrom;
+	private List<LessonFormEnum> lessonForm;
 	private BigDecimal maxDistance;
 	
 	public CriteriaDto() {
@@ -61,12 +61,12 @@ public class CriteriaDto {
 		this.address = address;
 	}
 
-	public List<LessonFormEnum> getLessonFrom() {
-		return lessonFrom;
+	public List<LessonFormEnum> getLessonForm() {
+		return lessonForm;
 	}
 
-	public void setLessonFrom(List<LessonFormEnum> lessonFrom) {
-		this.lessonFrom = lessonFrom;
+	public void setLessonForm(List<LessonFormEnum> lessonFrom) {
+		this.lessonForm = lessonFrom;
 	}
 
 	public BigDecimal getMaxDistance() {

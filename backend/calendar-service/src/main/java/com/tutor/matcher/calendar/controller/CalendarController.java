@@ -42,7 +42,7 @@ public class CalendarController {
         return CalendarService.getAvailability(calendarId, from, to);
     }
     
-    @Post("/availabileTeachers/{from}/{to}")
+    @Post("/availabileTeachers")
     @Produces(MediaType.APPLICATION_JSON)
     public static List<Long> getMultipleAvailability(List<Long> calendarIds, 
     		@Format("yyyy-MM-dd'T'HH:mm:ss") LocalDateTime from, 
@@ -50,7 +50,7 @@ public class CalendarController {
         return CalendarService.getAvailableTeachers(calendarIds, from, to);
     }
 
-    @Put("/events/{calendarId}")
+    @Post("/events/{calendarId}")
     public static HttpResponse<String> addEvents(@PathVariable long calendarId, List<EventDto> eventDtos){
     	CalendarService.addEvents(calendarId, eventDtos);
         return HttpResponse.ok("Succesfully added new events to calendar ${calendarId}");

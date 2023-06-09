@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: matcherService
+  server:
+    port: 8081
   router:
     static-resources:
       swagger:
@@ -36,3 +38,5 @@ netty:
 rabbitmq:
   username: admin
   password: admin
+calendarConfig:
+  url : https://localhost:8080/calendar/availabileTeachers/

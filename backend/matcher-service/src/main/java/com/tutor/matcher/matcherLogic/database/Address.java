@@ -56,7 +56,9 @@ public class Address {
 		return "Address [id=" + id + ", street=" + street + ", city=" + city + ", zip=" + zip + "]";
 	}
 	
-	
+	public String toGoogleString() {
+		return zip + " " + city + " " + street;
+	}
 	
 	
 	

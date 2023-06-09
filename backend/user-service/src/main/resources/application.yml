@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: userService
+  server:
+    port: 8082
   router:
     static-resources:
       default:
