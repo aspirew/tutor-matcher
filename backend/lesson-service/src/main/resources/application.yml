@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: lessonService
+  server:
+    port: -1
   router:
     static-resources:
       swagger:
@@ -36,3 +38,22 @@ netty:
 rabbitmq:
   username: admin
   password: admin
+---
+datasources:
+  default:
+    dialect: MYSQL
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: sherlock
+    password: elementary
+    url: jdbc:mysql://localhost:3307/db
+flyway:
+  datasources:
+    default:
+      enabled: true
+
+---
+consul:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"
