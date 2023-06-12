@@ -40,9 +40,9 @@ netty:
     allocator:
       max-order: 3
 
-rabbitmq:
-  username: admin
-  password: admin
+#rabbitmq:
+#  username: admin
+#  password: admin
 
 datasources:
   default:
@@ -50,7 +50,7 @@ datasources:
     driverClassName: com.mysql.cj.jdbc.Driver
     username: sherlock
     password: elementary
-    url: jdbc:mysql://localhost:3306/db
+    url: jdbc:mysql://host.docker.internal:3306/resource_service_db
 flyway:
   datasources:
     default:
@@ -61,4 +61,4 @@ consul:
   client:
     registration:
       enabled: true
-    defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"
+    defaultZone: "${CONSUL_HOST:host.docker.internal}:${CONSUL_PORT:8500}"

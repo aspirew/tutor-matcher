@@ -10,7 +10,7 @@ public class DBCPDataSource {
     private static BasicDataSource ds = new BasicDataSource();
     
     static {
-        ds.setUrl("jdbc:postgresql://localhost:5432/calendar_service_db");
+        ds.setUrl("jdbc:postgresql://host.docker.internal:5432/calendar_service_db");
         ds.setUsername("postgres");
         ds.setPassword("123");
         ds.setMinIdle(5);
