@@ -19,7 +19,7 @@ micronaut:
           clientSecret: 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
           authorizationUri: https://accounts.google.com/o/oauth2/auth
           tokenUri: https://accounts.google.com/o/oauth2/token
-          redirectUri: http://localhost:8080/oauth/callback/google
+          redirectUri: http://host.docker.internal:8080/oauth/callback/google
           scope:
             - openid
             - email
@@ -33,6 +33,6 @@ netty:
   default:
     allocator:
       max-order: 3
-rabbitmq:
-  username: admin
-  password: admin
+#rabbitmq:
+#  username: admin
+#  password: admin

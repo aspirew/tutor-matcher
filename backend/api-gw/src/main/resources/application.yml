@@ -1,6 +1,7 @@
 micronaut:
   application:
     name: apiGw
+    port: 8080
   router:
     static-resources:
       swagger:
@@ -15,6 +16,6 @@ netty:
       max-order: 3
 consul:
   client:
-    defaultZone: ${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}
+    defaultZone: ${CONSUL_HOST:host.docker.internal}:${CONSUL_PORT:8500}
     registration:
       enabled: true

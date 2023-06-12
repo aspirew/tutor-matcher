@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: lessonService
+  server:
+    port: -1
   router:
     static-resources:
       swagger:
@@ -19,7 +21,7 @@ micronaut:
           clientSecret: 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
           authorizationUri: https://accounts.google.com/o/oauth2/auth
           tokenUri: https://accounts.google.com/o/oauth2/token
-          redirectUri: http://localhost:8080/oauth/callback/google
+          redirectUri: http://host.docker.internal:8080/oauth/callback/google
           scope:
             - openid
             - email
@@ -33,6 +35,25 @@ netty:
   default:
     allocator:
       max-order: 3
-rabbitmq:
-  username: admin
-  password: admin
+#rabbitmq:
+#  username: admin
+#  password: admin
+---
+datasources:
+  default:
+    dialect: MYSQL
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: sherlock
+    password: elementary
+    url: jdbc:mysql://host.docker.internal:3305/lesson_service_db
+flyway:
+  datasources:
+    default:
+      enabled: true
+
+---
+consul:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${CONSUL_HOST:host.docker.internal}:${CONSUL_PORT:8500}"

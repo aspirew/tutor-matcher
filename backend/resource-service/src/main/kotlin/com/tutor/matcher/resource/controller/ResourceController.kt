@@ -43,7 +43,7 @@ open class ResourceController(resourceRepository: ResourceRepository) {
         return response
     }
 
-    @Get("/metadata/{id}")
+    @Get("/metadata/getById/{id}")
     fun getResourceMetadata(id: String): Optional<Resource> {
         return resourceRepository.findById(id)
     }
