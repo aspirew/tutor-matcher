@@ -44,15 +44,30 @@ public class CalendarController {
     
     @Post("/availabileTeachers")
     @Produces(MediaType.APPLICATION_JSON)
-    public static List<Long> getMultipleAvailability(List<Long> calendarIds, 
+    public static List<Long> getMultipleAvailable(List<Long> calendarIds, 
     		@Format("yyyy-MM-dd'T'HH:mm:ss") LocalDateTime from, 
     		@Format("yyyy-MM-dd'T'HH:mm:ss") LocalDateTime to) {
         return CalendarService.getAvailableTeachers(calendarIds, from, to);
+    }
+    
+    @Post("/availabileTeachers/availability")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static List<AvailabilityListDto> getMultipleAvailability(List<Long> calendarIds, 
+    		@Format("yyyy-MM-dd'T'HH:mm:ss") LocalDateTime from, 
+    		@Format("yyyy-MM-dd'T'HH:mm:ss") LocalDateTime to) {
+        return CalendarService.getAvailabilityTeachers(calendarIds, from, to);
     }
 
     @Post("/events/{calendarId}")
     public static HttpResponse<String> addEvents(@PathVariable long calendarId, List<EventDto> eventDtos){
     	CalendarService.addEvents(calendarId, eventDtos);
+        return HttpResponse.ok("Succesfully added new events to calendar ${calendarId}");
+    }
+    
+    @Post("/events/weekly/{calendarId}")
+    public static HttpResponse<String> addWeeklyEvents(@PathVariable long calendarId, 
+    		List<WeeklyEventDto> eventDtos){
+    	CalendarService.addWeeklyEvents(calendarId, eventDtos);
         return HttpResponse.ok("Succesfully added new events to calendar ${calendarId}");
     }
 

@@ -3,6 +3,7 @@ package com.tutor.matcher.matcher.controller;
 import java.util.List;
 
 import com.tutor.matcher.matcher.dto.CriteriaDto;
+import com.tutor.matcher.matcher.dto.TeacherAvailabilityDto;
 import com.tutor.matcher.matcher.dto.UserDto;
 import com.tutor.matcher.matcherLogic.service.MatcherService;
 
@@ -19,4 +20,9 @@ public class MatcherController {
     List<UserDto> lookForMatch(CriteriaDto criteriaDto) {
         return MatcherService.lookForMatch(criteriaDto);
     }
+	
+	@Post("/info")
+	List<TeacherAvailabilityDto> lookForCompleteMatch(CriteriaDto criteriaDto){
+		return MatcherService.lookForCompleteMatch(criteriaDto);
+	}
 }

@@ -101,8 +101,8 @@ public class Database2 {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 	    	
             PreparedStatement prepStmt = conn.prepareStatement(
-                    "insert into singleEvents(eventId, weekDay, timeRange)"
-                    + " values (?, ?, '" + event.getStartTime().format(formatter) + "," + 
+                    "insert into weeklyEvents(eventId, weekDay, timeRange)"
+                    + " values (?, ?, '[" + event.getStartTime().format(formatter) + "," + 
                     event.getEndTime().format(formatter) + ")');");
             prepStmt.setLong(1, event.getEventId());
             prepStmt.setInt(2, event.getWeekDay());

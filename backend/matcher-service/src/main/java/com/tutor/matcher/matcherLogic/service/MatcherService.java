@@ -15,7 +15,11 @@ import org.json.JSONObject;
 import com.tutor.matcher.matcherLogic.database.Address;
 import com.tutor.matcher.matcherLogic.database.Database;
 import com.tutor.matcher.matcherLogic.database.Teacher;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.maps.DistanceMatrixApi;
@@ -25,7 +29,10 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElement;
 import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.DistanceMatrixRow;
+import com.tutor.matcher.matcher.dto.AvailabilityDto;
+import com.tutor.matcher.matcher.dto.AvailabilityListDto;
 import com.tutor.matcher.matcher.dto.CriteriaDto;
+import com.tutor.matcher.matcher.dto.TeacherAvailabilityDto;
 import com.tutor.matcher.matcher.enums.LessonFormEnum;
 import com.tutor.matcher.matcher.dto.UserDto;
 
@@ -44,7 +51,7 @@ public class MatcherService {
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	
 //	@Value("$calendarConfig.url")
-	private static String CALENDAR_URL = "http://localhost:8080/calendar/availabileTeachers/";
+	private static String CALENDAR_URL = "http://localhost:8080/calendar/availabileTeachers/availability";
 
 	
 	private static OkHttpClient calendarHttpClient = null;
@@ -67,9 +74,32 @@ public class MatcherService {
 		return Database.getTeachers(teachingLevel, subject, lessonForms);
 	}
 	
-	private static void filterListByDistances(List<Teacher> list, CriteriaDto criteriaDto) {
+	public static List<TeacherAvailabilityDto> lookForCompleteMatch(CriteriaDto criteria) {
+		List<Teacher> list = getTeachersByBaseCriteria(criteria);
+		Map<Teacher, BigDecimal> mapDistances = filterListByDistances(list, criteria);
+		Map<Teacher, List<AvailabilityDto>> mapAvailability = filterListByCalendar(list, criteria);
+		
+		return list.stream().map(t -> getTeacherAvailabilityDto(t, mapDistances, mapAvailability)).toList();
+	}
+	
+	private static TeacherAvailabilityDto getTeacherAvailabilityDto(Teacher t, 
+			Map<Teacher, BigDecimal> mapDistances, Map<Teacher, List<AvailabilityDto>> mapAvailability) {
+		TeacherAvailabilityDto ta = new TeacherAvailabilityDto();
+		ta.setTeacher(UserMapper.mapUserDtoFromDB(t));
+		if(mapDistances != null) {
+			ta.setDistance(mapDistances.get(t));
+		}
+		if(mapAvailability != null) {
+			ta.setAvailability(mapAvailability.get(t));
+		}
+		return ta;
+	}
+	
+	private static Map<Teacher, BigDecimal> filterListByDistances(List<Teacher> list,
+			CriteriaDto criteriaDto) {
 		Address a = UserMapper.mapAddressFromDto(criteriaDto.getAddress());
 		List<Teacher> teachersWithoutDistance = new ArrayList<>();
+		Map<Teacher, BigDecimal> mapDistances = new HashMap<>();
 		for(int i = 0; i<list.size(); i++) {
 			Teacher t = list.get(i);
 			if(isOnlineMeeting(t, criteriaDto)) {
@@ -81,6 +111,7 @@ public class MatcherService {
 			}
 			a.setId(getAddressId(a));
 			BigDecimal distance = Database.getDistance(a.getId(), t.getAddress().getId());
+			mapDistances.put(t, distance);
 			if(distance == null) {
 				teachersWithoutDistance.add(t);
 			}
@@ -92,11 +123,13 @@ public class MatcherService {
 		Map<Teacher, BigDecimal> newDistances = getNewDistances(teachersWithoutDistance, a);
 		for(Teacher t : teachersWithoutDistance) {
 			BigDecimal distance = newDistances.get(t);
+			mapDistances.put(t, distance);
 			updateDistance(t.getAddress(), a, distance);
 			if(!isDistanceSatisfied(t, criteriaDto, distance)){
 				list.remove(t);
 			}
 		}
+		return mapDistances;
 	}
 	
 	private static boolean isOnlyOnlineNotMatch(Teacher teacher, CriteriaDto criteriaDto) {
@@ -185,10 +218,12 @@ public class MatcherService {
 		Database.insertDistance(address1.getId(), address2.getId(), distance);
 	}
 	
-	private static void filterListByCalendar(List<Teacher> list, CriteriaDto criteriaDto) {
+	private static Map<Teacher, List<AvailabilityDto>> filterListByCalendar(List<Teacher> list, 
+			CriteriaDto criteriaDto) {
 		if(criteriaDto.getStartTime()==null || criteriaDto.getEndTime()==null) {
-			return;
+			return null;
 		}
+		Map<Teacher, List<AvailabilityDto>> mapAvailability = new HashMap<>();
 		List<Long> ids = new ArrayList<>();
 		Map<Long, Teacher> teacherMap = new HashMap<>();
 		for(Teacher t : list) {
@@ -196,28 +231,31 @@ public class MatcherService {
 			teacherMap.put(t.getId(), t);
 		}
 		list.clear();
-		List<JsonElement> jsonArray;
-		jsonArray = getJsonArrayByCalendar(criteriaDto, ids);
-		for(JsonElement jsonElement : jsonArray) {
-			list.add(teacherMap.get(jsonElement.getAsLong()));
+		List<AvailabilityListDto> alList = getJsonArrayByCalendar(criteriaDto, ids);
+		for(AvailabilityListDto al : alList) {
+			list.add(teacherMap.get(al.getUserId()));
+			mapAvailability.put(teacherMap.get(al.getUserId()), al.getList());
 		}
+		return mapAvailability;
 	}
 
-	private static List<JsonElement> getJsonArrayByCalendar(CriteriaDto criteriaDto, List<Long> ids) {
-		List<JsonElement> jsonArray;
+	private static List<AvailabilityListDto> getJsonArrayByCalendar(CriteriaDto criteriaDto, 
+			List<Long> ids) {
 		try {
 			Response response = getCalendarHttpClient().newCall(getRequest(ids, criteriaDto.getStartTime(),
 					criteriaDto.getEndTime())).execute();
 			ResponseBody body = response.body();
-			String bodyString = body.string();
-			jsonArray = JsonParser.parseString(bodyString).getAsJsonArray().asList();
-			System.out.println(bodyString);
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(new JavaTimeModule());
+			JsonNode jsonNode = objectMapper.readTree(body.string());
+		    List<AvailabilityListDto> list = objectMapper.convertValue(jsonNode, new TypeReference<List<AvailabilityListDto>>() {});
+		    return list;
+//		    return new ObjectMapper().readValue(body.string(), List.class);
 			
 		}
 		catch(IOException e) {
 			throw new RuntimeException(e);
 		}
-		return jsonArray;
 	}
 	
 	private static OkHttpClient getCalendarHttpClient() {
@@ -242,7 +280,6 @@ public class MatcherService {
 		Request request = new Request.Builder().url(CALENDAR_URL)
 				.method("POST", body)
 				.build();
-		System.out.println(obj.toString());
 		return request;
 	}
 	

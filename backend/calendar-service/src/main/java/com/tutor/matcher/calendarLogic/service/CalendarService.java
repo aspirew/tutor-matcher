@@ -15,6 +15,7 @@ import com.tutor.matcher.calendarLogic.database.Database2;
 import com.tutor.matcher.calendarLogic.database.SingleEvent;
 import com.tutor.matcher.calendarLogic.database.WeeklyEvent;
 import com.tutor.matcher.calendar.dto.AvailabilityDto;
+import com.tutor.matcher.calendar.dto.AvailabilityListDto;
 import com.tutor.matcher.calendar.dto.CalendarDto;
 import com.tutor.matcher.calendar.dto.EventDto;
 import com.tutor.matcher.calendar.dto.WeeklyEventDto;
@@ -50,6 +51,18 @@ public class CalendarService {
 		for(long userId : userIds) {
 			if(!getAvailability(userId, from, to).isEmpty()) {
 				list.add(userId);
+			}
+		}
+		return list;
+	}
+	
+	public static List<AvailabilityListDto> getAvailabilityTeachers(List<Long> userIds, 
+			LocalDateTime from, LocalDateTime to){
+		List<AvailabilityListDto> list = new ArrayList<>();
+		for(long id : userIds) {
+			List<AvailabilityDto> availability = getAvailability(id, from, to);			
+			if(!availability.isEmpty()) {
+				list.add(new AvailabilityListDto(getAvailability(id, from, to), id));
 			}
 		}
 		return list;

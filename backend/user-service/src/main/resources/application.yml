@@ -35,6 +35,16 @@ micronaut:
     endpoints:
       logout:
         get-allowed: true
+    datasources:
+      default:
+        url: jdbc:postgresql://localhost:5432/user_db2
+        username: postgres
+        password: 123
+        driverClassName: org.postgresql.Driver
+    flyway:
+      datasources:
+        default:
+          enabled: true
 netty:
   default:
     allocator:

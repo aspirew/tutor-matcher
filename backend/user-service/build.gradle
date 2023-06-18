@@ -29,6 +29,9 @@ dependencies {
     implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
     implementation  'org.postgresql:postgresql:42.6.0'
 	implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+	
+	implementation("io.micronaut.flyway:micronaut-flyway")
+	runtimeOnly("org.flywaydb:flyway-mysql")
 
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
