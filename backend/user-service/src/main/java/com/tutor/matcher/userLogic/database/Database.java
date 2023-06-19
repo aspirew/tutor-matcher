@@ -163,6 +163,10 @@ public class Database {
 	}
 	
 	public static Teacher getTeacher(long userId) {
+		User u = getUser(userId);
+		if (u==null) {
+			return null;
+		}
 		Teacher teacher = new Teacher(getUser(userId));
 		try (Connection conn = getConnection()){
             PreparedStatement prepStmt = conn.prepareStatement(

@@ -22,11 +22,15 @@ import com.tutor.matcher.calendar.dto.WeeklyEventDto;
 
 public class CalendarService {
 	
-	public static void createCalendar(long userId) {
-		Database2.insertCalendar(userId);
+	public static boolean createCalendar(long userId) {
+		
+		return Database2.insertCalendar(userId);
 	}
 	
 	public static CalendarDto getCalendar(long userId) {
+		if(!Database2.isCalendarExist(userId)) {
+			return null;
+		}
 		CalendarDto calendar = new CalendarDto();
 		calendar.setId(userId);
 		calendar.setEvents(mapSingleEventsToDto(Database2.getSingleEvents(userId)));
@@ -35,6 +39,9 @@ public class CalendarService {
 	}
 	
 	public static List<AvailabilityDto> getAvailability(long userId, LocalDateTime from, LocalDateTime to) {
+		if(!Database2.isCalendarExist(userId)) {
+			return null;
+		}
 		List<AvailabilityDto> list = new ArrayList<>();
 		AvailabilityUtil au = new AvailabilityUtil(userId, from, to);
 		au.init();
@@ -68,16 +75,24 @@ public class CalendarService {
 		return list;
 	}
 	
-	public static void addEvents(long calendarId, List<EventDto> events) {
+	public static boolean addEvents(long calendarId, List<EventDto> events) {
+		if(!Database2.isCalendarExist(calendarId)) {
+			return false;
+		}
 		for(EventDto e : events) {
 			Database2.insertEvent(mapEventDtoToSingleEvent(calendarId, e));
 		}
+		return true;
 	}
 	
-	public static void addWeeklyEvents(long calendarId, List<WeeklyEventDto> events) {
+	public static boolean addWeeklyEvents(long calendarId, List<WeeklyEventDto> events) {
+		if(!Database2.isCalendarExist(calendarId)) {
+			return false;
+		}
 		for(WeeklyEventDto e : events) {
 			Database2.insertEvent(mapEventDtoToWeeklyEvent(calendarId, e));
 		}
+		return true;
 	}
 	
 	public static void synchWithGoogle(long calendarId, Credential credential) {
@@ -85,8 +100,12 @@ public class CalendarService {
 		GoogleCalendarUtil.synchronizeWithGoogle(credential, calendarId);
 	}
 	
-	public static void synchWithGoogle(long calendarId, String accessToken) {
+	public static boolean synchWithGoogle(long calendarId, String accessToken) {
+		if(!Database2.isCalendarExist(calendarId)) {
+			return false;
+		}
 		GoogleCalendarUtil.synchronizeWithGoogle(createCredentials(accessToken), calendarId);
+		return true;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -94,8 +113,12 @@ public class CalendarService {
 		return new GoogleCredential().setAccessToken(accessToken);
 	}
 	
-	public static void removeEvent(long calendarId, long eventId) {
+	public static boolean removeEvent(long calendarId, long eventId) {
+		if(!Database2.isCalendarExist(calendarId)) {
+			return false;
+		}
 		Database2.removeEvent(calendarId, eventId);
+		return true;
 	}
 	
 	private static SingleEvent mapEventDtoToSingleEvent(long calendarId, EventDto event) {

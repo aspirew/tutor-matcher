@@ -30,8 +30,12 @@ public class CalendarController {
 
     @Get("/create/{userId}")
     public static HttpResponse<String> createCalendar(@PathVariable long userId){
-    	CalendarService.createCalendar(userId);
-    	return HttpResponse.ok("Succesfully created new calendar with id ${userId}");
+    	if(CalendarService.createCalendar(userId)) {    		
+    		return HttpResponse.ok("Succesfully created new calendar with id " + userId);
+    	}
+    	else {
+    		return HttpResponse.notFound("Calendar already exists");
+    	}
     }
 
     @Get("/availability/{calendarId}/{from}/{to}")
@@ -60,27 +64,37 @@ public class CalendarController {
 
     @Post("/events/{calendarId}")
     public static HttpResponse<String> addEvents(@PathVariable long calendarId, List<EventDto> eventDtos){
-    	CalendarService.addEvents(calendarId, eventDtos);
-        return HttpResponse.ok("Succesfully added new events to calendar ${calendarId}");
+    	if(CalendarService.addEvents(calendarId, eventDtos)) {    		
+    		return HttpResponse.ok("Succesfully added new events to calendar");
+    	}
+    	return HttpResponse.notFound();
     }
     
     @Post("/events/weekly/{calendarId}")
     public static HttpResponse<String> addWeeklyEvents(@PathVariable long calendarId, 
     		List<WeeklyEventDto> eventDtos){
-    	CalendarService.addWeeklyEvents(calendarId, eventDtos);
-        return HttpResponse.ok("Succesfully added new events to calendar ${calendarId}");
+    	if(CalendarService.addWeeklyEvents(calendarId, eventDtos)) {
+      		return HttpResponse.ok("Succesfully added new events to calendar");
+    	}
+    	return HttpResponse.notFound();
+    	
     }
 
     @Post("/syncWithGoogle/{calendarId}")
     public static HttpResponse<String> synchWithGoogle(@PathVariable long calendarId, String accessToken) {
-    	CalendarService.synchWithGoogle(calendarId, accessToken);
-        return HttpResponse.ok("Succesfully synched with google");
+    	if(CalendarService.synchWithGoogle(calendarId, accessToken)) {    		
+    		return HttpResponse.ok("Succesfully synched with google");
+    	}
+    	return HttpResponse.notFound();
+    	
     }
 
     @Delete("/removeEvent/{calendarId}/{eventId}")
     public static HttpResponse<String> removeEvent(@PathVariable long calendarId, @PathVariable long eventId) {
-        CalendarService.removeEvent(calendarId, eventId);
-    	return HttpResponse.ok("Succesfully removed event $eventId from calendar $calendarId");
+        if(CalendarService.removeEvent(calendarId, eventId)) {        	
+        	return HttpResponse.ok("Succesfully removed event $eventId from calendar");
+        }
+    	return HttpResponse.notFound();
     }
 
 }

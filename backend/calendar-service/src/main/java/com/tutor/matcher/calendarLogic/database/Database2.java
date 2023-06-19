@@ -18,7 +18,22 @@ public class Database2 {
 		return DBCPDataSource.getConnection();
 	}
 	
+	public static boolean isCalendarExist(long userId) {
+		try (Connection conn = getConnection()){
+            PreparedStatement prepStmt = conn.prepareStatement(
+                    "select userId from calendars where userId = ?;");
+            prepStmt.setLong(1, userId);
+            ResultSet result = prepStmt.executeQuery();
+            return result.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+	}
+	
 	public static boolean insertCalendar(long userId) {
+		if(isCalendarExist(userId)) {
+			return false;
+		}
         try (Connection conn = getConnection()){
             PreparedStatement prepStmt = conn.prepareStatement(
                     "insert into calendars(userId) values (?);");

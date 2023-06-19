@@ -6,8 +6,9 @@ import com.tutor.matcher.user.dto.UserDto;
 
 public class UserService {
 	
-	public static void addUser(UserDto user) {
+	public static Long addUser(UserDto user) {
 		Database.insertUser(UserMapper.mapUserFromDto(user));
+		return Database.getUserIdByEmail(user.getMail());
 	}
 	
 	public static boolean updateUser(UserDto user) {
