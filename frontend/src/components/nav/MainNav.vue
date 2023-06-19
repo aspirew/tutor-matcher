@@ -11,6 +11,7 @@ import ContentComp from './ContentComp.vue'
     <template #right>
       <RouterLink :to="Routes.HOME"> Home </RouterLink>
       <RouterLink :to="Routes.PROFILE"> Profile </RouterLink>
+      <RouterLink :to="Routes.TUTOR_SEARCH"> Search </RouterLink>
     </template>
   </HeaderComp>
   <ContentComp>

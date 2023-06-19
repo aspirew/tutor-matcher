@@ -2,7 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { Routes } from './routes'
 import ProfileView from '@/views/ProfileView.vue'
+import TutorProfileView from '@/views/TutorProfileView.vue'
 import ProfileEditView from '@/views/ProfileEditView.vue'
+import TutorSearchView from '@/views/TutorSearchView.vue'
+import TutorSearchResultsView from '@/views/TutorSearchResultsView.vue'
 import { useTokenStore } from '@/stores/tokenStore'
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -25,6 +28,18 @@ const router = createRouter({
       path: Routes.PROFILE_EDIT,
       component: ProfileEditView,
     },
+    {
+      path: `${Routes.TUTOR_SEARCH}`,
+      component: TutorSearchView,
+    },
+    {
+      path: `${Routes.TUTOR_SEARCH}/:subject/:forms`,
+      component: TutorSearchResultsView,
+    },
+    {
+      path: `${Routes.PROFILE}/:userID`,
+      component: TutorProfileView
+    }
   ]
 })
 
